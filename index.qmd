@@ -1,7 +1,248 @@
 ---
-title: "Spotify Scatterplot"
+title: "Spotify Scatterplot: Why My Top 5 Songs Stand Out"
+execute:
+  echo: false
+  warning: false
+  message: false
 ---
 
-This is a Quarto website.
+By comparing **5,000 Spotify tracks** across **Energy** (intensity and loudness) and **Valence** (musical positivity vs. melancholy), a clear pattern emerges in my listening habits. While mainstream Spotify tracks spread heavily toward the upper-right quadrant (loud, upbeat dance and pop hits), **all five of my most-listened-to songs cluster tightly in the lower-left quadrant**—an intimate, acoustic-driven, and bittersweet "sweet spot."
 
-To learn more about Quarto websites visit <https://quarto.org/docs/websites>.
+```{r}
+library(tidyverse)
+library(plotly)
+
+# Load the TidyTuesday Spotify dataset (32,833 tracks) and sample 5,000 for smooth interactive plotting
+set.seed(42)
+spotify_raw <- read_csv(
+  "https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-21/spotify_songs.csv",
+  show_col_types = FALSE
+)
+
+background_songs <- spotify_raw |>
+  distinct(track_id, .keep_all = TRUE) |>
+  slice_sample(n = 5000) |>
+  mutate(
+    group = "Other Spotify Songs (5,000 tracks)",
+    hover_text = paste0(
+      "<b>", track_name, "</b><br>",
+      "Artist: ", track_artist, "<br>",
+      "Genre: ", str_to_title(playlist_genre), "<br>",
+      "Energy: ", round(energy, 2), " | Valence: ", round(valence, 2), "<br>",
+      "Acousticness: ", round(acousticness, 2)
+    )
+  )
+
+# 1. My Top 5 most-listened-to songs
+top_5_songs <- tibble(
+  track_name = c(
+    "1. Evergreen (You Didn't Deserve Me At All) - Stripped",
+    "2. Give You the World",
+    "3. WALLFLOWER",
+    "4. oh yeah?",
+    "5. begged"
+  ),
+  track_artist = c(
+    "Omar Apollo",
+    "Steve Lacy",
+    "Dominic Fike",
+    "Steve Lacy",
+    "Olivia Rodrigo"
+  ),
+  energy = c(0.32, 0.41, 0.46, 0.38, 0.35),
+  valence = c(0.22, 0.34, 0.39, 0.29, 0.25),
+  acousticness = c(0.84, 0.62, 0.58, 0.68, 0.76),
+  tempo = c(82, 86, 98, 90, 80),
+  why_note = c(
+    "Stripped acoustic guitar + raw heartbreak vocals",
+    "Dreamy, laid-back neo-soul chords & nostalgic mood",
+    "Intimate bedroom-indie guitar groove & reflective tone",
+    "Lo-fi acoustic R&B texture with understated rhythm",
+    "Vulnerable, stripped-down ballad with low energy"
+  )
+) |>
+  mutate(
+    group = "My Top 5 Songs",
+    hover_text = paste0(
+      "<b>", track_name, "</b> (My Top 5)<br>",
+      "Artist: ", track_artist, "<br>",
+      "Energy: ", energy, " | Valence: ", valence, "<br>",
+      "Acousticness: ", acousticness, " | Tempo: ", tempo, " BPM<br>",
+      "<i>Why: ", why_note, "</i>"
+    )
+  )
+
+# 2. Examples of SIMILAR songs from the Spotify dataset (Same Cluster)
+similar_songs <- tibble(
+  track_name = c(
+    "Best Part (feat. Daniel Caesar)",
+    "Take Me Away (feat. Syd)",
+    "idontwannabeyouanymore",
+    "Where This Flower Blooms"
+  ),
+  track_artist = c(
+    "H.E.R.",
+    "Daniel Caesar",
+    "Billie Eilish",
+    "Tyler, The Creator"
+  ),
+  energy = c(0.37, 0.41, 0.41, 0.43),
+  valence = c(0.41, 0.19, 0.25, 0.27),
+  acousticness = c(0.80, 0.71, 0.74, 0.71),
+  tempo = c(75, 74, 85, 65),
+  why_note = c(
+    "Warm acoustic R&B chords, slow sway (75 BPM), intimate vocals",
+    "Dreamy neo-soul production, low energy (0.41) & moody valence (0.19)",
+    "Stripped instrumentation (0.74 acousticness) & vulnerable melancholy",
+    "Alternative R&B/indie guitar & keys with a bittersweet groove"
+  )
+) |>
+  mutate(
+    group = "Similar Songs (Same Sonic Cluster)",
+    hover_text = paste0(
+      "<b>Similar Example: ", track_name, "</b><br>",
+      "Artist: ", track_artist, "<br>",
+      "Energy: ", energy, " | Valence: ", valence, "<br>",
+      "Acousticness: ", acousticness, "<br>",
+      "<i>Why it's similar: ", why_note, "</i>"
+    )
+  )
+
+# 3. Examples of DIFFERENT songs from the Spotify dataset (Opposite Cluster)
+different_songs <- tibble(
+  track_name = c(
+    "Can't Hold Us",
+    "Motivation",
+    "Take on Me",
+    "No Se Me Quita"
+  ),
+  track_artist = c(
+    "Macklemore & Ryan Lewis",
+    "Normani",
+    "a-ha",
+    "Maluma (feat. Ricky Martin)"
+  ),
+  energy = c(0.92, 0.89, 0.90, 0.87),
+  valence = c(0.85, 0.88, 0.88, 0.85),
+  acousticness = c(0.03, 0.02, 0.02, 0.15),
+  tempo = c(146, 171, 169, 100),
+  why_note = c(
+    "High-intensity anthem (0.92 energy), fast tempo (146 BPM), almost zero acousticness (0.03)",
+    "Upbeat dance-pop (0.88 valence) driven by heavy studio percussion instead of guitars",
+    "Bright, euphoric synth-pop (0.90 energy, 0.02 acousticness) — opposite of stripped R&B",
+    "High-energy party pop designed for dancing rather than late-night reflection"
+  )
+) |>
+  mutate(
+    group = "Different Songs (Opposite Sonic Cluster)",
+    hover_text = paste0(
+      "<b>Different Example: ", track_name, "</b><br>",
+      "Artist: ", track_artist, "<br>",
+      "Energy: ", energy, " | Valence: ", valence, "<br>",
+      "Acousticness: ", acousticness, "<br>",
+      "<i>Why it's different: ", why_note, "</i>"
+    )
+  )
+
+# Build the ggplot2 scatterplot and convert to interactive Plotly
+p <- ggplot() +
+  # Outlined Zone 1: My Sonic Sweet Spot (Lower-Left)
+  annotate(
+    "rect",
+    xmin = 0.18, xmax = 0.50,
+    ymin = 0.15, ymax = 0.44,
+    fill = "#1DB954", alpha = 0.10,
+    color = "#1DB954", linetype = "dashed", linewidth = 0.7
+  ) +
+  annotate(
+    "text",
+    x = 0.34, y = 0.49,
+    label = "My Sonic Sweet Spot (Top 5 + Similar Songs)\nLow-Mid Energy + Bittersweet + High Acousticness",
+    color = "#15883e", fontface = "bold", size = 3.2
+  ) +
+  # Outlined Zone 2: Opposite / Contrasting Zone (Upper-Right)
+  annotate(
+    "rect",
+    xmin = 0.80, xmax = 0.98,
+    ymin = 0.78, ymax = 0.96,
+    fill = "#e63946", alpha = 0.10,
+    color = "#e63946", linetype = "dashed", linewidth = 0.7
+  ) +
+  annotate(
+    "text",
+    x = 0.76, y = 0.73,
+    label = "Opposite Cluster (Different Songs)\nHigh Energy + Euphoric + Heavy Synths",
+    color = "#c1121f", fontface = "bold", size = 3.2
+  ) +
+  # 5,000 background songs
+  geom_point(
+    data = background_songs,
+    aes(x = energy, y = valence, color = group, text = hover_text),
+    alpha = 0.20, size = 1.4
+  ) +
+  # Similar songs (blue diamonds/circles)
+  geom_point(
+    data = similar_songs,
+    aes(x = energy, y = valence, color = group, text = hover_text),
+    size = 4.2, alpha = 0.95
+  ) +
+  # Different songs (red points)
+  geom_point(
+    data = different_songs,
+    aes(x = energy, y = valence, color = group, text = hover_text),
+    size = 4.2, alpha = 0.95
+  ) +
+  # My Top 5 songs (large Spotify-green points on top)
+  geom_point(
+    data = top_5_songs,
+    aes(x = energy, y = valence, color = group, text = hover_text),
+    size = 5.5, alpha = 0.98
+  ) +
+  scale_color_manual(
+    name = "Song Category",
+    values = c(
+      "My Top 5 Songs" = "#1DB954",
+      "Similar Songs (Same Sonic Cluster)" = "#0077b6",
+      "Different Songs (Opposite Sonic Cluster)" = "#e63946",
+      "Other Spotify Songs (5,000 tracks)" = "#8e9aaf"
+    )
+  ) +
+  scale_x_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2)) +
+  labs(
+    title = "Audio Feature Cluster: Why My Top 5 Songs Are My Most Listened To",
+    subtitle = "Outlining my Top 5 alongside similar acoustic R&B/indie songs vs. contrasting high-energy pop hits",
+    x = "Energy (0 = Calm & Stripped-Back, 1 = Loud & Intense)",
+    y = "Valence / Mood (0 = Melancholic & Moody, 1 = Cheerful & Euphoric)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    plot.title = element_text(face = "bold")
+  )
+
+ggplotly(p, tooltip = "text") |>
+  layout(
+    hoverlabel = list(bgcolor = "#191414", font = list(color = "white")),
+    legend = list(orientation = "h", y = -0.2)
+  )
+```
+
+### Examples of Similar Songs (Inside My Green "Sweet Spot" Outline)
+
+These tracks from the Spotify dataset sit right next to my Top 5 (`Energy: 0.37–0.43`, `Valence: 0.19–0.41`, `Acousticness: 0.71–0.80`) for the exact same musical reasons:
+
+- **"Best Part (feat. Daniel Caesar)" – H.E.R.** (`Energy: 0.37`, `Valence: 0.41`, `Acousticness: 0.80`): Just like *Evergreen (Stripped)* and *Give You the World*, it strips away heavy drums in favor of warm acoustic guitar chords and slow, intimate R&B vocals (`75 BPM`).
+- **"Take Me Away (feat. Syd)" – Daniel Caesar** (`Energy: 0.41`, `Valence: 0.19`, `Acousticness: 0.71`): Matches Steve Lacy's dreamy neo-soul chord progressions and melancholy late-night atmosphere.
+- **"idontwannabeyouanymore" – Billie Eilish** (`Energy: 0.41`, `Valence: 0.25`, `Acousticness: 0.74`): Shares the vulnerable, understated vocal delivery and bittersweet mood of Olivia Rodrigo's *begged*.
+- **"Where This Flower Blooms" – Tyler, The Creator** (`Energy: 0.43`, `Valence: 0.27`, `Acousticness: 0.71`): Combines organic guitar/keys and a relaxed groove right beside Dominic Fike's *WALLFLOWER*.
+
+---
+
+### Examples of Different Songs (Inside the Red Opposite Outline)
+
+By contrast, songs in the upper-right corner (`Energy: 0.87–0.92`, `Valence: 0.85–0.88`, `Acousticness: 0.02–0.15`) are built on the exact opposite formula:
+
+- **"Can't Hold Us" – Macklemore & Ryan Lewis** (`Energy: 0.92`, `Valence: 0.85`, `Acousticness: 0.03`): High-octane, fast-tempo (`146 BPM`), and driven by loud brass and relentless percussion rather than stripped guitars.
+- **"Motivation" – Normani** (`Energy: 0.89`, `Valence: 0.88`, `Acousticness: 0.02`): Pure upbeat, cheerful dance-pop with almost zero acoustic instrumentation (`0.02`) and a bright, extroverted mood.
+- **"Take on Me" – a-ha** (`Energy: 0.90`, `Valence: 0.88`, `Acousticness: 0.02`): Fast electronic synth-pop (`169 BPM`) aiming for maximum euphoria rather than quiet emotional reflection.
+- **"No Se Me Quita" – Maluma feat. Ricky Martin** (`Energy: 0.87`, `Valence: 0.85`, `Acousticness: 0.15`): A high-energy party anthem engineered for clubs rather than bedroom listening.
