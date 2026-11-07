@@ -1,0 +1,16 @@
+[
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Spotify Scatterplot: Why My Top 5 Songs Stand Out",
+    "section": "",
+    "text": "By comparing 5,000 Spotify tracks across Energy (intensity and loudness) and Valence (musical positivity vs. melancholy), a clear pattern emerges in my listening habits. While mainstream Spotify tracks spread heavily toward the upper-right quadrant (loud, upbeat dance and pop hits), all five of my most-listened-to songs cluster tightly in the lower-left quadrant—an intimate, acoustic-driven, and bittersweet “sweet spot.”\n\n\n\n\n\n\n\nExamples of Similar Songs (Inside My Green “Sweet Spot” Outline)\nThese tracks from the Spotify dataset sit right next to my Top 5 (Energy: 0.37–0.43, Valence: 0.19–0.41, Acousticness: 0.71–0.80) for the exact same musical reasons:\n\n“Best Part (feat. Daniel Caesar)” – H.E.R. (Energy: 0.37, Valence: 0.41, Acousticness: 0.80): Just like Evergreen (Stripped) and Give You the World, it strips away heavy drums in favor of warm acoustic guitar chords and slow, intimate R&B vocals (75 BPM).\n“Take Me Away (feat. Syd)” – Daniel Caesar (Energy: 0.41, Valence: 0.19, Acousticness: 0.71): Matches Steve Lacy’s dreamy neo-soul chord progressions and melancholy late-night atmosphere.\n“idontwannabeyouanymore” – Billie Eilish (Energy: 0.41, Valence: 0.25, Acousticness: 0.74): Shares the vulnerable, understated vocal delivery and bittersweet mood of Olivia Rodrigo’s begged.\n“Where This Flower Blooms” – Tyler, The Creator (Energy: 0.43, Valence: 0.27, Acousticness: 0.71): Combines organic guitar/keys and a relaxed groove right beside Dominic Fike’s WALLFLOWER.\n\n\n\n\nExamples of Different Songs (Inside the Red Opposite Outline)\nBy contrast, songs in the upper-right corner (Energy: 0.87–0.92, Valence: 0.85–0.88, Acousticness: 0.02–0.15) are built on the exact opposite formula:\n\n“Can’t Hold Us” – Macklemore & Ryan Lewis (Energy: 0.92, Valence: 0.85, Acousticness: 0.03): High-octane, fast-tempo (146 BPM), and driven by loud brass and relentless percussion rather than stripped guitars.\n“Motivation” – Normani (Energy: 0.89, Valence: 0.88, Acousticness: 0.02): Pure upbeat, cheerful dance-pop with almost zero acoustic instrumentation (0.02) and a bright, extroverted mood.\n“Take on Me” – a-ha (Energy: 0.90, Valence: 0.88, Acousticness: 0.02): Fast electronic synth-pop (169 BPM) aiming for maximum euphoria rather than quiet emotional reflection.\n“No Se Me Quita” – Maluma feat. Ricky Martin (Energy: 0.87, Valence: 0.85, Acousticness: 0.15): A high-energy party anthem engineered for clubs rather than bedroom listening."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "About this site"
+  }
+]
